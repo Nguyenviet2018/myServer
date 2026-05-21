@@ -8,8 +8,10 @@ const app = express();
 app.use(express.json());
 
 // 2. Tự động lấy cấu hình từ file .env (dưới máy) hoặc từ trang Web Vercel (khi deploy)
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+// const supabaseUrl = process.env.SUPABASE_URL;
+// const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
 // Kiểm tra nhanh để phòng trường hợp bạn quên chưa cấu hình file .env ở máy
 if (!supabaseUrl || !supabaseAnonKey) {
