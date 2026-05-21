@@ -89,8 +89,9 @@ app.get('/test-db', async (req, res) => {
     const result = await pool.query('SELECT NOW()');
     res.json({
       success: true,
-      message: "Kết nối Database ngon lành!",
-      db_time: result.rows[0].now
+      message: "Kết nối Database ngon lành trên Vercel!",
+      // Trả về toàn bộ rows để xem cấu trúc bên trong thay vì chỉ lấy .now
+      data: result.rows 
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
