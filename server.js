@@ -71,12 +71,7 @@ const app = express();
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL, 
-  ssl: {
-    // Thay vì rejectUnauthorized: false (đôi khi bị Node chặn ở chain sâu hơn)
-    // Chúng ta chuyển hẳn sang thiết lập này để bỏ qua kiểm tra chứng chỉ tự ký:
-    require: true,
-    rejectUnauthorized: false
-  }
+  ssl: true // Ép bật SSL trực tiếp bằng True, cực kỳ ăn khớp với Vercel Postgres
 });
 
 // Test thử xem kết nối Database thành công không
