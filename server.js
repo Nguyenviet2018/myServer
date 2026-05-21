@@ -12,6 +12,11 @@ let products = [
   { id: 2, name: 'Chuột không dây', price: 450000 }
 ];
 
+// Thêm đoạn này vào trước lệnh app.listen nhé bạn
+app.get('/', (req, res) => {
+    res.send('🚀 Chúc mừng! API Server của Việt đang chạy cực mượt trên Vercel!');
+});
+
 // 1. GET: Lấy toàn bộ danh sách sản phẩm
 app.get('/api/products', (req, res) => {
   res.status(200).json({
