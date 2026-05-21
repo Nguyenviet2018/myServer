@@ -69,9 +69,10 @@ app.use(express.json());
 
 // 1. Lấy thông tin cấu hình từ biến môi trường Supabase của Vercel
 // Thay 'MAT_KHAU_SUPABASE_CỦA_BẠN' bằng mật khẩu thật của bạn nhé
-const dbPassword = "Viet2018ca@123456"; 
+const dbPassword = "Viet2018ca@123456";
 
-const connectionString = `postgres://postgres.qtenmeeiswqjukqaekyl:${dbPassword}@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=disable`;
+// Cổng chuẩn là :5432 nằm ở ngay sau địa chỉ máy chủ pooler
+const connectionString = `postgres://postgres:${dbPassword}@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=disable`;
 
 const pool = new Pool({
   connectionString: connectionString,
