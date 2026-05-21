@@ -69,9 +69,17 @@ const app = express();
 // 1. Cấu hình kết nối Database
 // Khi chạy trên Vercel, Vercel sẽ tự nạp biến process.env.POSTGRES_URL cho bạn
 
+// 1. Tự lắp ráp chuỗi kết nối dựa trên các biến có sẵn của Supabase trên Vercel
+// Cấu trúc chuẩn: postgres://postgres:[MẬT_KHẨU]@[ĐỊA_CHỈ_HOST]:5432/postgres
+const dbPassword = process.env.POSTGRES_PASSWORD;
+// Trích xuất địa chỉ host từ biến SUPABASE_URL (bỏ chữ https:// đi)
+const dbHost = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.replace('https://', '') : '';
+
+const connectionString = `postgres://postgres:${dbPassword}@${dbHost}:5432/postgres?sslmode=disable`;
+
+// 2. Ném chuỗi kết nối vừa ráp xong vào Pool
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL, 
-  ssl: true // Ép bật SSL trực tiếp bằng True, cực kỳ ăn khớp với Vercel Postgres
+  connectionString: connectionString
 });
 
 // Test thử xem kết nối Database thành công không
