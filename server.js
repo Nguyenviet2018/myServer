@@ -68,7 +68,7 @@ const app = express();
 app.use(express.json());
 
 // 1. Lấy mật khẩu từ biến môi trường của bạn trên Vercel
-const dbPassword = process.env.POSTGRES_PASSWORD;
+const dbPassword = "Viet2018ca@123456";
 
 // 2. Ráp chuỗi kết nối trực tiếp CHUẨN XÁC theo thông số bạn vừa cung cấp
 const connectionString = `postgres://postgres:${dbPassword}@db.qtenmeeiswqjukqaekyl.supabase.co:5432/postgres`;
