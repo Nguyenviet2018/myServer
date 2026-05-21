@@ -68,10 +68,12 @@ const app = express();
 
 // 1. Cấu hình kết nối Database
 // Khi chạy trên Vercel, Vercel sẽ tự nạp biến process.env.POSTGRES_URL cho bạn
+
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL || "postgres://username:password@localhost:5432/local_db",
+  // Ép buộc dùng đúng biến môi trường mà Vercel tự sinh ra khi bạn bấm kết nối Supabase/Neon
+  connectionString: process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL, 
   ssl: {
-    rejectUnauthorized: false // Bắt buộc phải có cái này để bảo mật khi kết nối lên Vercel
+    rejectUnauthorized: false // Bắt buộc phải có cái này để mây cho phép kết nối
   }
 });
 
