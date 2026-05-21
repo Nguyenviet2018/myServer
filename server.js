@@ -62,53 +62,54 @@
 // });
 // /*
 const express = require('express');
-const { Pool } = require('pg'); // Nạp thư viện Postgres
+const { Pool } = require('pg'); 
 
 const app = express();
+app.use(express.json());
 
-// 1. Cấu hình kết nối Database
-// Khi chạy trên Vercel, Vercel sẽ tự nạp biến process.env.POSTGRES_URL cho bạn
-
-// 1. Tự lắp ráp chuỗi kết nối dựa trên các biến có sẵn của Supabase trên Vercel
-// Cấu trúc chuẩn: postgres://postgres:[MẬT_KHẨU]@[ĐỊA_CHỈ_HOST]:5432/postgres
+// 1. Lấy thông tin cấu hình từ biến môi trường Supabase của Vercel
 const dbPassword = process.env.POSTGRES_PASSWORD;
-// Trích xuất địa chỉ host từ biến SUPABASE_URL (bỏ chữ https:// đi)
+// Trích xuất host (ví dụ từ https://xyz.supabase.co thành xyz.supabase.co)
 const dbHost = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.replace('https://', '') : '';
 
+// Tự ráp chuỗi kết nối chuẩn cho Supabase thuần
 const connectionString = `postgres://postgres:${dbPassword}@${dbHost}:5432/postgres?sslmode=disable`;
 
-// 2. Ném chuỗi kết nối vừa ráp xong vào Pool
 const pool = new Pool({
   connectionString: connectionString
 });
 
-// Test thử xem kết nối Database thành công không
-pool.connect((err, client, release) => {
-  if (err) {
-    return console.error('❌ Kết nối Database thất bại:', err.stack);
-  }
-  console.log('🔌 Kết nối Database PostgreSQL thành công!');
-  release();
+// 2. API Debug: Kiểm tra xem chuỗi kết nối ráp có chuẩn không
+app.get('/debug-url', (req, res) => {
+  const maskedPassword = dbPassword ? dbPassword.substring(0, 3) + '***' : 'RỖNG';
+  res.json({
+    host_thu_duoc: dbHost,
+    mat_khau_thu_duoc: maskedPassword,
+    chuoi_ket_noi_thu_duoc: `postgres://postgres:${maskedPassword}@${dbHost}:5432/postgres?sslmode=disable`
+  });
 });
 
-// 2. Viết một API lấy thời gian của Database để chạy thử
+// 3. API Test Database chính thức
 app.get('/test-db', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
     res.json({
       success: true,
-      message: "Kết nối Database ngon lành trên Vercel!",
-      // Trả về toàn bộ rows để xem cấu trúc bên trong thay vì chỉ lấy .now
-      data: result.rows 
+      message: "Kết nối Database Supabase ngon lành trên Vercel!",
+      db_time: result.rows[0].now
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ 
+      success: false, 
+      error: err.message || String(err),
+      detail: err 
+    });
   }
 });
 
-// Trang chủ hiển thị lời chào
+// 4. Trang chủ hiển thị lời chào
 app.get('/', (req, res) => {
-  res.send('🚀 Server của Việt đang chạy và đã tích hợp Postgres!');
+  res.send('🚀 Server của Việt đang chạy và đã tích hợp Postgres thuần!');
 });
 
 const PORT = process.env.PORT || 3000;
