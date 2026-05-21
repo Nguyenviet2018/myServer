@@ -8,14 +8,12 @@ const app = express();
 app.use(express.json());
 
 // 2. Tự động lấy cấu hình từ file .env (dưới máy) hoặc từ trang Web Vercel (khi deploy)
-// const supabaseUrl = process.env.SUPABASE_URL;
-// const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
 // Kiểm tra nhanh để phòng trường hợp bạn quên chưa cấu hình file .env ở máy
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("⚠️ CẢNH BÁO: Thiếu cấu hình SUPABASE_URL hoặc SUPABASE_ANON_KEY trong file .env!");
+  console.error("⚠️ CẢNH BÁO: Thiếu cấu hình SUPABASE_URL hoặc SUPABASE_ANON_KEY!");
 }
 
 // 3. Khởi tạo Supabase Client chính chủ
@@ -48,9 +46,14 @@ app.get('/', (req, res) => {
   res.send('🚀 Server của Việt đã chuyển sang dùng Supabase Client xịn sò!');
 });
 
-// 6. Cấu hình cổng chạy Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server đang chạy mượt mà ở cổng ${PORT}`);
-  console.log(`Bấm vào đây để test dưới máy: http://localhost:${PORT}/api/products`);
-});
+// 6. Cấu hình cổng chạy Server (Bọc điều kiện để Vercel không bị lỗi 500)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server đang chạy mượt mà ở cổng ${PORT}`);
+    console.log(`Bấm vào đây để test dưới máy: http://localhost:${PORT}/api/products`);
+  });
+}
+
+// BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ VERCEL KHÔNG BỊ LỖI 500
+module.exports = app;
