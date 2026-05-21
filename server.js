@@ -68,15 +68,14 @@ const app = express();
 app.use(express.json());
 
 // 1. Lấy thông tin cấu hình từ biến môi trường Supabase của Vercel
-const dbPassword = process.env.POSTGRES_PASSWORD;
-// Trích xuất host (ví dụ từ https://xyz.supabase.co thành xyz.supabase.co)
-const dbHost = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.replace('https://', '') : '';
+// Thay 'MAT_KHAU_SUPABASE_CỦA_BẠN' bằng mật khẩu thật của bạn nhé
+const dbPassword = "Viet2018ca@123456"; 
 
-// Tự ráp chuỗi kết nối chuẩn cho Supabase thuần
-const connectionString = `postgres://postgres:${dbPassword}@${dbHost}:5432/postgres?sslmode=disable`;
+const connectionString = `postgres://postgres.qtenmeeiswqjukqaekyl:${dbPassword}@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=disable`;
 
 const pool = new Pool({
-  connectionString: connectionString
+  connectionString: connectionString,
+  connectionTimeoutMillis: 10000 // Tăng thời gian chờ lên 10 giây cho chắc chắn
 });
 
 // 2. API Debug: Kiểm tra xem chuỗi kết nối ráp có chuẩn không
