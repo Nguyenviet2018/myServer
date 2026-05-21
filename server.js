@@ -1,7 +1,7 @@
 import express from 'express';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware bắt buộc để Express có thể đọc được dữ liệu JSON gửi lên từ client (req.body)
 app.use(express.json());
