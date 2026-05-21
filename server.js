@@ -70,10 +70,12 @@ const app = express();
 // Khi chạy trên Vercel, Vercel sẽ tự nạp biến process.env.POSTGRES_URL cho bạn
 
 const pool = new Pool({
-  // Ép buộc dùng đúng biến môi trường mà Vercel tự sinh ra khi bạn bấm kết nối Supabase/Neon
   connectionString: process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL, 
   ssl: {
-    rejectUnauthorized: false // Bắt buộc phải có cái này để mây cho phép kết nối
+    // Thay vì rejectUnauthorized: false (đôi khi bị Node chặn ở chain sâu hơn)
+    // Chúng ta chuyển hẳn sang thiết lập này để bỏ qua kiểm tra chứng chỉ tự ký:
+    require: true,
+    rejectUnauthorized: false
   }
 });
 
