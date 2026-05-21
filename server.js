@@ -67,26 +67,19 @@ const { Pool } = require('pg');
 const app = express();
 app.use(express.json());
 
-// 1. Lấy thông tin cấu hình từ biến môi trường Supabase của Vercel
-// Thay 'MAT_KHAU_SUPABASE_CỦA_BẠN' bằng mật khẩu thật của bạn nhé
-const dbPassword = "Viet2018ca@123456";
+// 1. Lấy mật khẩu từ biến môi trường của bạn trên Vercel
+const dbPassword = process.env.POSTGRES_PASSWORD;
 
-// Cổng chuẩn là :5432 nằm ở ngay sau địa chỉ máy chủ pooler
-const connectionString = `postgres://postgres:${dbPassword}@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=disable`;
+// 2. Ráp chuỗi kết nối trực tiếp CHUẨN XÁC theo thông số bạn vừa cung cấp
+const connectionString = `postgres://postgres:${dbPassword}@db.qtenmeeiswqjukqaekyl.supabase.co:5432/postgres`;
 
 const pool = new Pool({
   connectionString: connectionString,
-  connectionTimeoutMillis: 10000 // Tăng thời gian chờ lên 10 giây cho chắc chắn
-});
-
-// 2. API Debug: Kiểm tra xem chuỗi kết nối ráp có chuẩn không
-app.get('/debug-url', (req, res) => {
-  const maskedPassword = dbPassword ? dbPassword.substring(0, 3) + '***' : 'RỖNG';
-  res.json({
-    host_thu_duoc: dbHost,
-    mat_khau_thu_duoc: maskedPassword,
-    chuoi_ket_noi_thu_duoc: `postgres://postgres:${maskedPassword}@${dbHost}:5432/postgres?sslmode=disable`
-  });
+  ssl: {
+    // Kết nối trực tiếp vào Supabase bắt buộc phải có chứng chỉ SSL này
+    rejectUnauthorized: false 
+  },
+  connectionTimeoutMillis: 15000 // Chờ tối đa 15 giây vì Server nằm bên Mỹ (us-east-1)
 });
 
 // 3. API Test Database chính thức
@@ -95,7 +88,7 @@ app.get('/test-db', async (req, res) => {
     const result = await pool.query('SELECT NOW()');
     res.json({
       success: true,
-      message: "Kết nối Database Supabase ngon lành trên Vercel!",
+      message: "Kết nối trực tiếp Database Supabase ngon lành cành đào!",
       db_time: result.rows[0].now
     });
   } catch (err) {
@@ -109,7 +102,7 @@ app.get('/test-db', async (req, res) => {
 
 // 4. Trang chủ hiển thị lời chào
 app.get('/', (req, res) => {
-  res.send('🚀 Server của Việt đang chạy và đã tích hợp Postgres thuần!');
+  res.send('🚀 Server của Việt đang chạy và đã kết nối trực tiếp Postgres thành công!');
 });
 
 const PORT = process.env.PORT || 3000;
